@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -26,6 +26,36 @@ interface Notice {
 export default function Home() {
   const [emergencyNotice, setEmergencyNotice] = useState<Notice | null>(null);
   const [servicesVisible, setServicesVisible] = useState(false);
+  const stats = useMemo(
+    () => [
+      {
+        value: 70,
+        suffix: '+',
+        label: 'Years of Excellence',
+        color: 'text-primary',
+      },
+      {
+        value: 2000,
+        suffix: '+',
+        label: 'Students Enrolled',
+        color: 'text-secondary',
+      },
+      {
+        value: 150,
+        suffix: '+',
+        label: 'Expert Faculty',
+        color: 'text-accent',
+      },
+      {
+        value: 98,
+        suffix: '%',
+        label: 'Placement Rate',
+        color: 'text-primary',
+      },
+    ],
+    []
+  );
+  const [statValues, setStatValues] = useState(() => stats.map(() => 0));
 
   useEffect(() => {
     async function loadNotices() {
@@ -59,6 +89,43 @@ export default function Home() {
     const timeout = window.setTimeout(() => setServicesVisible(true), 100);
     return () => window.clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    if (!stats.length) {
+      return;
+    }
+
+    if (typeof window === 'undefined') {
+      setStatValues(stats.map(stat => stat.value));
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (prefersReducedMotion.matches) {
+      setStatValues(stats.map(stat => stat.value));
+      return;
+    }
+
+    const duration = 1200;
+    const start = performance.now();
+
+    const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
+    let animationFrameId = window.requestAnimationFrame(function animate(currentTime) {
+      const elapsed = currentTime - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(progress);
+
+      setStatValues(stats.map(stat => Math.round(stat.value * eased)));
+
+      if (progress < 1) {
+        animationFrameId = window.requestAnimationFrame(animate);
+      } else {
+        setStatValues(stats.map(stat => stat.value));
+      }
+    });
+
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [stats]);
 
   const services = [
     {
@@ -145,7 +212,7 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
-            <Link key={service.title} to={service.link} className="block">
+            <Link key={service.title} to={service.link} className="block group">
               <div
                 style={{ transitionDelay: `${index * 100}ms` }}
                 className={cn(
@@ -153,12 +220,14 @@ export default function Home() {
                   servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 )}
               >
-                <Card className="h-full hover:border-primary">
-                  <service.icon className={`h-12 w-12 mb-4 ${service.color}`} />
-                  <h3 className="text-xl font-heading font-semibold mb-2 text-foreground">
+                <Card className="h-full hover:border-primary transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-xl">
+                  <service.icon className={`h-12 w-12 mb-4 transition-transform duration-300 group-hover:scale-110 ${service.color}`} />
+                  <h3 className="text-xl font-heading font-semibold mb-2 text-foreground transition-colors group-hover:text-primary">
                     {service.title}
                   </h3>
-                  <p className="text-muted-foreground">{service.description}</p>
+                  <p className="text-muted-foreground transition-colors group-hover:text-foreground">
+                    {service.description}
+                  </p>
                 </Card>
               </div>
             </Link>
@@ -169,22 +238,15 @@ export default function Home() {
       {/* Quick Stats */}
       <Section>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <div className="text-4xl font-heading font-bold text-primary mb-2">70+</div>
-            <div className="text-muted-foreground">Years of Excellence</div>
-          </div>
-          <div>
-            <div className="text-4xl font-heading font-bold text-secondary mb-2">2000+</div>
-            <div className="text-muted-foreground">Students Enrolled</div>
-          </div>
-          <div>
-            <div className="text-4xl font-heading font-bold text-accent mb-2">150+</div>
-            <div className="text-muted-foreground">Expert Faculty</div>
-          </div>
-          <div>
-            <div className="text-4xl font-heading font-bold text-primary mb-2">98%</div>
-            <div className="text-muted-foreground">Placement Rate</div>
-          </div>
+          {stats.map((stat, index) => (
+            <div key={stat.label}>
+              <div className={`text-4xl font-heading font-bold mb-2 ${stat.color}`}>
+                {statValues[index].toLocaleString()}
+                {stat.suffix}
+              </div>
+              <div className="text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
         </div>
       </Section>
     </div>
