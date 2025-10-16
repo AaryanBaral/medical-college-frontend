@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Medical College Design System - Light Theme Only */
+    --mc-primary: 207 62% 44%;      /* #2A74B5 - Professional blue */
+    --mc-primary-foreground: 0 0% 100%;
+    
+    --mc-secondary: 183 48% 52%;    /* #4BBFC3 - Calming teal */
+    --mc-secondary-foreground: 0 0% 100%;
+    
+    --mc-accent: 26 89% 67%;        /* #F4A261 - Warm orange CTA */
+    --mc-accent-foreground: 0 0% 20%;
+    
+    --mc-bg: 210 17% 98%;           /* #F8F9FA - Off-white background */
+    --mc-bg-alt: 180 33% 96%;       /* #E8F7F8 - Very light teal for alternating sections */
+    
+    --mc-text: 0 0% 20%;            /* #333333 - Charcoal text */
+    --mc-text-muted: 0 0% 45%;      /* Muted text */
+    
+    --mc-alert: 0 69% 52%;          /* #D32F2F - Emergency red */
+    --mc-alert-foreground: 0 0% 100%;
+    
+    --mc-footer: 209 61% 30%;       /* #1F4E79 - Dark blue footer */
+    --mc-footer-foreground: 0 0% 95%;
+    
+    /* Semantic tokens mapped to MC colors */
+    --background: var(--mc-bg);
+    --foreground: var(--mc-text);
+    
+    --card: 0 0% 100%;
+    --card-foreground: var(--mc-text);
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--mc-text);
+    
+    --primary: var(--mc-primary);
+    --primary-foreground: var(--mc-primary-foreground);
+    
+    --secondary: var(--mc-secondary);
+    --secondary-foreground: var(--mc-secondary-foreground);
+    
+    --muted: 210 20% 92%;
+    --muted-foreground: var(--mc-text-muted);
+    
+    --accent: var(--mc-accent);
+    --accent-foreground: var(--mc-accent-foreground);
+    
+    --destructive: var(--mc-alert);
+    --destructive-foreground: var(--mc-alert-foreground);
+    
+    --border: 210 20% 88%;
+    --input: 210 20% 92%;
+    --ring: var(--mc-primary);
+    
+    --radius: 0.75rem;
+    
+    /* Shadows */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  .section-alt {
+    background-color: hsl(var(--mc-bg-alt));
+  }
+  
+  .link-underline {
+    @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-secondary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  }
+  
+  .card-shadow {
+    box-shadow: var(--shadow-md);
+  }
+  
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
